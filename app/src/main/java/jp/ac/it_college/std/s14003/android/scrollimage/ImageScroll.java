@@ -14,18 +14,19 @@ import android.view.SurfaceView;
 public class ImageScroll extends SurfaceView implements SurfaceHolder.Callback, Runnable {
     private final String TAG = "ImageScroll";
     private Bitmap mImage;
+    private Bitmap inu;
     private SurfaceHolder mHolder;
     private Thread mLooper;
     private int mHeight; //画面の高さ
     private int mPositionTop = 0; //表示位置(Top:Y座標)
-    private int mPositionLeft = 0; //表示位置(Left:X座標)
     private long mTime = 0; //1つ前の描画時刻
     private long mLapTime = 0; //画面上部から下部に到着するまでの時間
 
     public ImageScroll(Context context) {
         super(context);
         getHolder().addCallback(this);
-        mImage = BitmapFactory.decodeResource(getResources(),R.drawable.background);
+        mImage = BitmapFactory.decodeResource(getResources(),R.raw.background);
+        inu = BitmapFactory.decodeResource(getResources(), R.raw.back);
     }
 
     @Override
@@ -35,8 +36,11 @@ public class ImageScroll extends SurfaceView implements SurfaceHolder.Callback, 
         Paint paint  = new Paint();
         mHolder = holder;
         mLooper = new Thread(this);
+
         //描画処理(Look中なのでなるべく早く)
         canvas.drawBitmap(mImage, 0, 0, paint);
+
+        canvas.drawBitmap(inu, 0, 0, paint);
         //Lookしたキャンバスを開放,他の描画処理スレッドがあればそちらに
         holder.unlockCanvasAndPost(canvas);
     }
@@ -45,6 +49,7 @@ public class ImageScroll extends SurfaceView implements SurfaceHolder.Callback, 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         if (mLooper != null) {
+            Log.d(TAG,"mLooper not null");
             mHeight = height;
             mTime = System.currentTimeMillis();
             mLooper.start();
@@ -67,7 +72,7 @@ public class ImageScroll extends SurfaceView implements SurfaceHolder.Callback, 
             mTime = System.currentTimeMillis();
 
             //次の描画位置
-            //1秒間に200px動くとして
+            //1秒間に100px動くとして
             int nextPosition = (int) ((delta / 1000.0) * 100);
 
             //描画範囲の設定
@@ -91,7 +96,9 @@ public class ImageScroll extends SurfaceView implements SurfaceHolder.Callback, 
         Paint paint = new Paint();
         canvas.drawColor(Color.GRAY);
 
+        int mPositionLeft = 0;
         canvas.drawBitmap(mImage, mPositionLeft, mPositionTop, paint);
+        canvas.drawBitmap(inu, mPositionLeft, mPositionTop -1080, paint);
         mHolder.unlockCanvasAndPost(canvas);
     }
 }
