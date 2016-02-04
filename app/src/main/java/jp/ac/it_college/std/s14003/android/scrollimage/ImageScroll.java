@@ -11,7 +11,9 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-public class ImageScroll extends SurfaceView implements SurfaceHolder.Callback, Runnable {
+public class ImageScroll extends SurfaceView
+        implements SurfaceHolder.Callback, Runnable {
+
     private final String TAG = "ImageScroll";
     private Bitmap mImage;
     private Bitmap inu;
@@ -21,6 +23,8 @@ public class ImageScroll extends SurfaceView implements SurfaceHolder.Callback, 
     private int mPositionTop = 0; //表示位置(Top:Y座標)
     private long mTime = 0; //1つ前の描画時刻
     private long mLapTime = 0; //画面上部から下部に到着するまでの時間
+    private Background background;
+
 
     public ImageScroll(Context context) {
         super(context);
@@ -28,6 +32,7 @@ public class ImageScroll extends SurfaceView implements SurfaceHolder.Callback, 
         mImage = BitmapFactory.decodeResource(getResources(),R.raw.background);
         inu = BitmapFactory.decodeResource(getResources(), R.raw.back);
     }
+
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
@@ -45,6 +50,7 @@ public class ImageScroll extends SurfaceView implements SurfaceHolder.Callback, 
         holder.unlockCanvasAndPost(canvas);
     }
 
+
     //SurfaceView変更時に呼び出される
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
@@ -56,6 +62,7 @@ public class ImageScroll extends SurfaceView implements SurfaceHolder.Callback, 
         }
     }
     //SurfaceView破棄時に呼び出される
+
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         mLooper = null;
@@ -97,8 +104,12 @@ public class ImageScroll extends SurfaceView implements SurfaceHolder.Callback, 
         canvas.drawColor(Color.GRAY);
 
         int mPositionLeft = 0;
-        canvas.drawBitmap(mImage, mPositionLeft, mPositionTop, paint);
-        canvas.drawBitmap(inu, mPositionLeft, mPositionTop -1080, paint);
-        mHolder.unlockCanvasAndPost(canvas);
+        if (background == null) {
+            Log.d(TAG, "background is null");
+            canvas.drawBitmap(mImage, mPositionLeft, mPositionTop, paint);
+            canvas.drawBitmap(inu, mPositionLeft, mPositionTop -1080, paint);
+            mHolder.unlockCanvasAndPost(canvas);
+        }
+
     }
 }
